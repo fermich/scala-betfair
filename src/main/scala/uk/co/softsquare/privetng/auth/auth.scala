@@ -1,10 +1,13 @@
 package uk.co.softsquare.privetng.auth
 
-object Account {
-  val ApplicationId = "reactive-betfair"
-  val ApplicationKey = "HbdQdFs9jEWlWSGM"
-  val DelayedApplicationKey = "f8A1qnUaxDLLDD1y"
+case class ApplicationInfo(applicationId: String, applicationKey: String, delayedApplicationKey: String)
+object ApplicationInfo {
+  def driverTestApp(): ApplicationInfo = ApplicationInfo(
+    applicationId = "reactive-betfair",
+    applicationKey = "HbdQdFs9jEWlWSGM",
+    delayedApplicationKey = "f8A1qnUaxDLLDD1y")
 }
+
 
 case class Credentials(username: String, password: String) {
   override def toString: String = s"Credentials($username, ###)"

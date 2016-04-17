@@ -1,6 +1,6 @@
 package uk.co.softsquare.privetng.service
 
-import uk.co.softsquare.privetng.auth.Credentials
+import uk.co.softsquare.privetng.auth.{ApplicationInfo, Credentials}
 import uk.co.softsquare.privetng.request.{AuthorisedRequest, MarketFilter, TimeRange}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -8,6 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 object MarketsTest extends App {
   val bf = new WSBetfair {
     override def executionContext: ExecutionContext = ExecutionContext.global
+    override def applicationInfo: ApplicationInfo = ApplicationInfo.driverTestApp
   }
   import bf.ex
 

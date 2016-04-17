@@ -1,6 +1,6 @@
 package uk.co.softsquare.privetng.service
 
-import uk.co.softsquare.privetng.auth.Credentials
+import uk.co.softsquare.privetng.auth.{ApplicationInfo, Credentials}
 import uk.co.softsquare.privetng.enums.{OrderType, PersistenceType, Side}
 import uk.co.softsquare.privetng.request.{AuthorisedRequest, CancelInstruction, CancelOrdersRequest, LimitOrder, PlaceInstruction, PlaceOrdersRequest, ReplaceInstruction, ReplaceOrdersRequest, UpdateInstruction, UpdateOrdersRequest}
 import uk.co.softsquare.privetng.response.ExecutionReport
@@ -10,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait QueryTest {
   val bf = new WSBetfair {
     override def executionContext: ExecutionContext = ExecutionContext.global
+    override def applicationInfo: ApplicationInfo = ApplicationInfo.driverTestApp
   }
   val credentials = Credentials.fromConsole()
 

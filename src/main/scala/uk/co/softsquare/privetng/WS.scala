@@ -2,8 +2,8 @@ package uk.co.softsquare.privetng
 
 import java.util.concurrent.Executors
 
-import play.api.libs.json.{Reads, JsValue}
-import uk.co.softsquare.privetng.auth.Account
+import play.api.libs.json.{JsValue, Reads}
+import uk.co.softsquare.privetng.auth.ApplicationInfo
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,6 +15,7 @@ trait Http {
 
 trait HttpComponent {
   def executionContext: ExecutionContext
+  def applicationInfo: ApplicationInfo
   def http: Http
 }
 
@@ -26,8 +27,8 @@ object WS {
   val client = new play.api.libs.ws.ning.NingWSClient(builder.build())
 
   def url(url: String) = client.url(url)
-  def urlWithHeaders(endpoint: String, token: String) = url(endpoint).withHeaders(
-    "X-Application" -> Account.ApplicationKey,
+  def urlWithHeaders(app: ApplicationInfo, endpoint: String, token: String) = url(endpoint).withHeaders(
+    "X-Application" -> app.applicationKey,
     "X-Authentication" -> token,
     "content-type" -> "application/json"
   )
@@ -41,7 +42,7 @@ trait WSHttpComponent extends HttpComponent {
     override def post[T](url: String, body: Map[String, Seq[String]])(implicit fjs: Reads[T]): Future[T] =
       WS.url(url)
         .withHeaders(
-          "X-Application" -> Account.ApplicationKey,
+          "X-Application" -> applicationInfo.applicationKey,
           "Accept" -> "application/json"
         )
         .withRequestTimeout(1000)
@@ -49,7 +50,7 @@ trait WSHttpComponent extends HttpComponent {
         .post(body).map(_.json.as[T])
 
     override def postJson[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[T] =
-      WS.urlWithHeaders(url, token).post(body).map(_.json.as[T])
+      WS.urlWithHeaders(applicationInfo, url, token).post(body).map(_.json.as[T])
 
     /**
      * Can't be run in the same thread pool as the WS.client

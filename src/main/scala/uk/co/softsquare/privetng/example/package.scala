@@ -2,7 +2,7 @@ package uk.co.softsquare.privetng
 
 import java.util.concurrent.Executor
 
-import uk.co.softsquare.privetng.auth.Credentials
+import uk.co.softsquare.privetng.auth.{ApplicationInfo, Credentials}
 import uk.co.softsquare.privetng.service.{Betfair, WSBetfair}
 
 import scala.concurrent.ExecutionContext
@@ -15,6 +15,7 @@ package object example {
 
     val betfair = new WSBetfair {
       override def executionContext: ExecutionContext = CurrentThreadExecutionContext
+      override def applicationInfo: ApplicationInfo = ApplicationInfo.driverTestApp
     }
 
     lazy val MyCredentials = Credentials.fromConsole()
