@@ -10,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait Http {
   def post[T](url: String, body: Map[String, Seq[String]])(implicit fjs: Reads[T]): Future[T]
   def postJson[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[T]
+  def postJsonOpt[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[ResponseOpt[T]]
   def shutdown()
 }
 
@@ -52,6 +53,9 @@ trait WSHttpComponent extends HttpComponent {
     override def postJson[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[T] =
       WS.urlWithHeaders(applicationInfo, url, token).post(body).map(_.json.as[T])
 
+    override def postJsonOpt[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[ResponseOpt[T]] =
+      WS.urlWithHeaders(applicationInfo, url, token).post(body).map(response => ResponseOpt(response.status, response.json.asOpt[T]))
+
     /**
      * Can't be run in the same thread pool as the WS.client
      */
@@ -60,4 +64,8 @@ trait WSHttpComponent extends HttpComponent {
     }).start()
 
   }
+}
+
+case class ResponseOpt[T](status: Int, response: Option[T]) {
+  def isOK() = status == 200
 }

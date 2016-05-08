@@ -1,7 +1,7 @@
 package uk.co.softsquare.privetng.service
 
 import play.api.libs.json.Json
-import uk.co.softsquare.privetng.{HttpComponent, WSHttpComponent}
+import uk.co.softsquare.privetng.{HttpComponent, ResponseOpt, WSHttpComponent}
 import uk.co.softsquare.privetng.auth.Session.LoginResponse
 import uk.co.softsquare.privetng.auth.Credentials
 import uk.co.softsquare.privetng.enums.Wallet
@@ -69,6 +69,14 @@ trait ListMarketCatalogueAction extends BaseEndpoint { self: HttpComponent =>
 
   def listMarketCatalogue(request: AuthorisedRequest): Future[List[MarketCatalogueResponse]] =
     http.postJson[List[MarketCatalogueResponse]](
+      url = ListMarketCatalogue, token = request.token,
+      body = Json.obj(
+        "filter" -> Json.toJson(request.filter),
+        "maxResults" -> request.maxResults
+      ))
+
+  def listMarketCatalogueOpt(request: AuthorisedRequest): Future[ResponseOpt[List[MarketCatalogueResponse]]] =
+    http.postJsonOpt[List[MarketCatalogueResponse]](
       url = ListMarketCatalogue, token = request.token,
       body = Json.obj(
         "filter" -> Json.toJson(request.filter),
